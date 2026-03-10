@@ -13,7 +13,7 @@ sam.to(device="cpu")
 
 mask_generator = SamAutomaticMaskGenerator(
     sam,
-    points_per_side=64,
+    points_per_side=64, #more is more better
     pred_iou_thresh=0.88,
     stability_score_thresh=0.92#,
     # min_mask_region_area=100  # removes tiny noise
@@ -22,8 +22,8 @@ mask_generator = SamAutomaticMaskGenerator(
 # -----------------------
 # Load Image
 # -----------------------
-image = cv2.imread("basic.jpeg")
-# image = cv2.imread("050719-15scfh-250fps_C001H001S0001.png")
+# image = cv2.imread("basic.jpeg")
+image = cv2.imread("050719-15scfh-250fps_C001H001S0001.png")
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
 # -----------------------
@@ -48,38 +48,38 @@ for mask_data in masks:
     print('running...')
     for cnt in contours:
         area = cv2.contourArea(cnt)
-        # if area < 100:
-        #     continue
+        if area > 1500:
+            continue
 
         perimeter = cv2.arcLength(cnt, True)
         if perimeter == 0:
             continue
         
-        circularity = 4 * np.pi * (area / (perimeter ** 2))
+        # circularity = 4 * np.pi * (area / (perimeter ** 2))
 
-        if circularity > 0.75:
-            bubble_count += 1
+        # if circularity > 0.75:
+        bubble_count += 1
 
-            # Random color for each bubble
-            color = np.random.randint(0, 255, size=3).tolist()
+        # Random color for each bubble
+        color = np.random.randint(0, 255, size=3).tolist()
 
-            # Fill bubble area
-            cv2.drawContours(overlay, [cnt], -1, color, -1)
+        # Fill bubble area
+        cv2.drawContours(overlay, [cnt], -1, color, -1)
 
-            # Draw outline
-            cv2.drawContours(output_image, [cnt], -1, (0, 255, 0), 2)
+        # Draw outline
+        cv2.drawContours(output_image, [cnt], -1, (0, 255, 0), 2)
 
-            # Label bubble number
-            M = cv2.moments(cnt)
-            if M["m00"] != 0:
-                cx = int(M["m10"] / M["m00"])
-                cy = int(M["m01"] / M["m00"])
-                cv2.putText(output_image, str(bubble_count), 
-                            (cx, cy), 
-                            cv2.FONT_HERSHEY_SIMPLEX, 
-                            0.6, 
-                            (255, 0, 0), 
-                            2)
+        # Label bubble number
+        M = cv2.moments(cnt)
+        if M["m00"] != 0:
+            cx = int(M["m10"] / M["m00"])
+            cy = int(M["m01"] / M["m00"])
+            cv2.putText(output_image, str(bubble_count), 
+                        (cx, cy), 
+                        cv2.FONT_HERSHEY_SIMPLEX, 
+                        0.6, 
+                        (255, 0, 0), 
+                        2)
 
 # Blend overlay with original image
 alpha = 0.4
@@ -90,4 +90,4 @@ print(f"\nEstimated number of bubbles: {bubble_count}")
 # Convert back to BGR for saving
 output_bgr = cv2.cvtColor(output_image, cv2.COLOR_RGB2BGR)
 
-cv2.imwrite("highlighted_bubbles.jpg", output_bgr)
+cv2.imwrite("highlighted_objects2.jpg", output_bgr)

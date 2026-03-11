@@ -2,13 +2,14 @@ import cv2
 import numpy as np
 import torch
 from segment_anything import sam_model_registry, SamAutomaticMaskGenerator
+import matplotlib.pyplot as plt
 
 # -----------------------
 # Load SAM model
 # -----------------------
-# sam = sam_model_registry["vit_b"](checkpoint="./defaultCheckpoint/sam_vit_b_01ec64.pth")
+sam = sam_model_registry["vit_b"](checkpoint="./defaultCheckpoint/sam_vit_b_01ec64.pth")
 # sam.to(device="cpu")
-sam = sam_model_registry["default"](checkpoint="./defaultCheckpoint/sam_vit_h_4b8939.pth")
+# sam = sam_model_registry["default"](checkpoint="./defaultCheckpoint/sam_vit_h_4b8939.pth")
 sam.to(device="cpu")
 
 mask_generator = SamAutomaticMaskGenerator(
@@ -18,6 +19,8 @@ mask_generator = SamAutomaticMaskGenerator(
     stability_score_thresh=0.92#,
     # min_mask_region_area=100  # removes tiny noise
 )
+
+d=[]
 
 # -----------------------
 # Load Image
@@ -54,7 +57,7 @@ for mask_data in masks:
         perimeter = cv2.arcLength(cnt, True)
         if perimeter == 0:
             continue
-        
+        d.append(4*area/perimeter)
         # circularity = 4 * np.pi * (area / (perimeter ** 2))
 
         # if circularity > 0.75:
@@ -91,3 +94,17 @@ print(f"\nEstimated number of bubbles: {bubble_count}")
 output_bgr = cv2.cvtColor(output_image, cv2.COLOR_RGB2BGR)
 
 cv2.imwrite("highlighted_objects2.jpg", output_bgr)
+
+d=np.array(d)
+
+plt.figure()
+
+plt.hist(d, bins=15)
+
+plt.xlabel("diameter, pixels")
+
+plt.ylabel("Frequency")
+
+plt.title("Histogram Distribution (15 Bins)")
+
+plt.savefig('hist.jpg',dpi=300)

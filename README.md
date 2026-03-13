@@ -21,10 +21,10 @@ Runtime is ~30-120s per image.
 1. use the condition of interest per Dr G
    1. no u-bend tests
 2. from vid file export a frame every ~1 second as jpeg
-3. autocrop it down to help the model
-4. crank up the settings and try to get 90%+ of the gas (including churn and caps)
+   1. autocrop it down to help the model
+3. crank up the settings and try to get 90%+ of the gas (including churn and caps)
    1. in parallel try opencv (cv2) with some sorta basic edge detection if its faster/better then great. if it sucks or is similar speed then forget it
-5. in post, record the rep. diameter, the x and y position, and timestamp. dump in a csv file for plotting later in histogram or whatever
+4. in post, record the rep. diameter, the x and y position, and timestamp. dump in a csv file for plotting later in histogram or whatever
    1. find a pixel -> length conversion
 
 ## Final Goal

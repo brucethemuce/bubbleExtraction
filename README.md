@@ -18,14 +18,19 @@ Runtime is ~30-120s per image.
 ## future tasks
 ~1. Use a real input test image to tune whichever prompt parameters~
 ~2. export the bubble diameter distribution (or other stats the sponsor is interested in, velocity could be significant work)~
-1. use the condition of interest per Dr G
-   1. no u-bend tests
+~1. use the condition of interest per Dr G~
+   ~1. no u-bend tests~
 2. from vid file export a frame every ~1 second as jpeg
    1. autocrop it down to help the model
 3. crank up the settings and try to get 90%+ of the gas (including churn and caps)
+   1. try jiaqis matlab code for preprocessing the images (could be v. slow)
    1. in parallel try opencv (cv2) with some sorta basic edge detection if its faster/better then great. if it sucks or is similar speed then forget it
 4. in post, record the rep. diameter, the x and y position, and timestamp. dump in a csv file for plotting later in histogram or whatever
-   1. find a pixel -> length conversion
+~   1. find a pixel -> length conversion~
+
+## Notes
+the ID of the cylinder chamber is 2.5 inches (left to right)
+
 
 ## Final Goal
 Input a video file, export bubble statistics with some nice graphs (histograms, or timeplots). Repeat the processing for each experimental condition of interest.

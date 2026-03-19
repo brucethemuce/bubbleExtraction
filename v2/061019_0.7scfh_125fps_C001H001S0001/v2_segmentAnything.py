@@ -7,14 +7,14 @@ import matplotlib.pyplot as plt
 # -----------------------
 # Load SAM model
 # -----------------------
-sam = sam_model_registry["vit_b"](checkpoint="./defaultCheckpoint/sam_vit_b_01ec64.pth")
+sam = sam_model_registry["vit_b"](checkpoint="../sam_vit_b_01ec64.pth")
 # sam.to(device="cpu")
 # sam = sam_model_registry["default"](checkpoint="./defaultCheckpoint/sam_vit_h_4b8939.pth")
 sam.to(device="cpu")
 
 mask_generator = SamAutomaticMaskGenerator(
     sam,
-    points_per_side=64, #more is more better
+    points_per_side=32, #more is more better
     pred_iou_thresh=0.88,
     stability_score_thresh=0.92#,
     # min_mask_region_area=100  # removes tiny noise
@@ -26,7 +26,7 @@ d=[]
 # Load Image
 # -----------------------
 # image = cv2.imread("basic.jpeg")
-image = cv2.imread("050719-15scfh-250fps_C001H001S0001.png")
+image = cv2.imread("frames_partial/frame_00000.png")
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
 # -----------------------
@@ -51,9 +51,8 @@ for mask_data in masks:
     print('running...')
     for cnt in contours:
         area = cv2.contourArea(cnt)
-        if area > 1500:
+        if area > 2000:
             continue
-
         perimeter = cv2.arcLength(cnt, True)
         if perimeter == 0:
             continue
@@ -99,9 +98,9 @@ d=np.array(d)
 
 plt.figure()
 
-plt.hist(d, bins=15)
+plt.hist(d/330*25.4*2.5, bins=9)
 
-plt.xlabel("diameter, pixels")
+plt.xlabel("diameter, mm")
 
 plt.ylabel("Frequency")
 

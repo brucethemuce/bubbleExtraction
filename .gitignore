@@ -1,6 +1,9 @@
 defaultCheckpoint/*
 .venv/*
 venv/*
+myenv/*
 .vscode/*
 *.mp4
 *.MP4
+*.pth
+*.png

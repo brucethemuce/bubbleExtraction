@@ -6,23 +6,23 @@ import subprocess
 import shutil
 
 # -------- SETTINGS --------
-input_path = "bottom.MP4_h264_24fps.MP4" #must be h.264 codec
+input_path = "061019_0.7scfh_125fps_C001H001S0001.mp4" #must be h.264 codec
 images_dir = "frames_partial"
 make_video = False
 outputName = "foo.mp4"
-output_fps = 24 #unsure how to scale it to do every X seconds
+output_fps = 10 #unsure how to scale it to do every X seconds
+background = cv2.imread("background.jpg")
 
 # Time trimming (in seconds)
 start_time = 0.0
-# end_time = 227.0   # fullCycle
-end_time = start_time+30   # motionOnly
+end_time = start_time+260
 duration = None  # e.g. 5.0 (used only if end_time is None)
 
 # Processing settings
-crop_x, crop_y, crop_w, crop_h = 510, 0, 750, 1000
-rotation_angle = 0.0
-contrast_alpha = 0.75
-sharpenWeight = 1.5
+crop_x, crop_y, crop_w, crop_h = 380, 0, 333, 632
+rotation_angle = 0.
+contrast_alpha = 0.95
+sharpenWeight = 2
 clipLimit = 4.0
 # --------------------------
 
@@ -70,6 +70,22 @@ clahe = cv2.createCLAHE(clipLimit=clipLimit, tileGridSize=(8,8))
 frame_idx = start_frame
 saved_idx = 0
 
+# -----------------------
+# LOAD BACKGROUND IMAGE
+# -----------------------
+
+# Apply SAME preprocessing as frames (VERY IMPORTANT)
+bg_rotated = cv2.warpAffine(
+    background,
+    cv2.getRotationMatrix2D((frame_width // 2, frame_height // 2), rotation_angle, 1.0),
+    (frame_width, frame_height),
+    flags=cv2.INTER_LINEAR,
+    borderMode=cv2.BORDER_REPLICATE
+)
+
+bg_cropped = bg_rotated[crop_y:crop_y+crop_h, crop_x:crop_x+crop_w]
+bg_gray = cv2.cvtColor(bg_cropped, cv2.COLOR_BGR2GRAY)
+
 while frame_idx < end_frame:
     ret, frame = cap.read()
     if not ret:
@@ -97,6 +113,9 @@ while frame_idx < end_frame:
     # ---- GRAYSCALE ----
     gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
 
+        # Optional: smooth
+    # thresh = cv2.GaussianBlur(thresh, (5, 5), 0)
+    
     # ---- CLAHE ----
     local_contrast = clahe.apply(gray)
 
@@ -104,7 +123,11 @@ while frame_idx < end_frame:
     blur = cv2.GaussianBlur(local_contrast, (0, 0), 1.0)
     enhanced = cv2.addWeighted(local_contrast, sharpenWeight, blur, -0.5, 0)
 
-    # ---- SAVE IMAGE ----
+
+
+    # -----------------------
+    # SAVE IMAGE
+    # -----------------------
     filename = os.path.join(images_dir, f"frame_{saved_idx:05d}.png")
     cv2.imwrite(filename, enhanced)
 

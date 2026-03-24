@@ -169,10 +169,10 @@ print(f"Saved bubble data to {csv_file}")
 diameter=np.array(df["diameter_px"])
 
 plt.figure()
-plt.hist(diameter/333*25.4*2.5, bins=11)
+plt.hist(diameter/333*25.4*2.5, bins=31)
 plt.xlabel("diameter, mm")
 plt.ylabel("Frequency")
-plt.title("Histogram Distribution (11 Bins)")
+plt.title("Histogram Distribution (31 Bins)")
 plt.savefig('hist.jpg',dpi=300)
 
 

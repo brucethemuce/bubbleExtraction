@@ -2,7 +2,7 @@
 
 1. make a python environment
 2. pip install git+https://github.com/facebookresearch/segment-anything.git
-3. pip install opencv-python pycocotools matplotlib onnxruntime onnx torch torchvision
+3. pip install opencv-python pycocotools matplotlib onnxruntime onnx torch torchvision pandas scikit-image
  - and whatever other dependencies give an error on trying to run, overall needs several gigabytes of space.
 4. download a "model checkpoint". starting with the smallest model "vit_b" which runs fine on cpu only. later will use vit_h on come cuda hardware (MTDL01)
  - https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth

@@ -11,10 +11,11 @@ images_dir = "frames_partial"
 make_video = False
 outputName = "foo.mp4"
 output_fps = 10 #unsure how to scale it to do every X seconds
+background = cv2.imread("background.jpg")
 
 # Time trimming (in seconds)
 start_time = 0.0
-end_time = start_time+5 
+end_time = start_time+1 
 duration = None  # e.g. 5.0 (used only if end_time is None)
 
 # Processing settings
@@ -69,6 +70,22 @@ clahe = cv2.createCLAHE(clipLimit=clipLimit, tileGridSize=(8,8))
 frame_idx = start_frame
 saved_idx = 0
 
+# -----------------------
+# LOAD BACKGROUND IMAGE
+# -----------------------
+
+# Apply SAME preprocessing as frames (VERY IMPORTANT)
+bg_rotated = cv2.warpAffine(
+    background,
+    cv2.getRotationMatrix2D((frame_width // 2, frame_height // 2), rotation_angle, 1.0),
+    (frame_width, frame_height),
+    flags=cv2.INTER_LINEAR,
+    borderMode=cv2.BORDER_REPLICATE
+)
+
+bg_cropped = bg_rotated[crop_y:crop_y+crop_h, crop_x:crop_x+crop_w]
+bg_gray = cv2.cvtColor(bg_cropped, cv2.COLOR_BGR2GRAY)
+
 while frame_idx < end_frame:
     ret, frame = cap.read()
     if not ret:
@@ -93,22 +110,48 @@ while frame_idx < end_frame:
     # ---- CROP ----
     cropped = rotated[crop_y:crop_y+crop_h, crop_x:crop_x+crop_w]
 
-    # insert background subtract here
-
-
     # ---- GRAYSCALE ----
     gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
 
+    # -----------------------
+    # BACKGROUND SUBTRACTION
+    # -----------------------
+    diff = cv2.subtract(gray, bg_gray)
+
+    diff = cv2.GaussianBlur(diff, (9, 9), 0)
+
+    # Use adaptive threshold (MUCH better than fixed)
+    thresh = cv2.adaptiveThreshold(
+        diff,
+        255,
+        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY,
+        21,   # block size (odd number)
+        2     # constant subtraction
+    )
+
+    # Clean noise
+    kernel = np.ones((3, 3), np.uint8)
+    thresh = cv2.medianBlur(thresh, 5)
+    thresh = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
+
+    # Optional: smooth
+    # thresh = cv2.GaussianBlur(thresh, (5, 5), 0)
+    
     # ---- CLAHE ----
-    local_contrast = clahe.apply(gray)
+    local_contrast = clahe.apply(thresh)
 
     # ---- SHARPEN ----
     blur = cv2.GaussianBlur(local_contrast, (0, 0), 1.0)
     enhanced = cv2.addWeighted(local_contrast, sharpenWeight, blur, -0.5, 0)
 
-    # ---- SAVE IMAGE ----
+
+
+    # -----------------------
+    # SAVE IMAGE
+    # -----------------------
     filename = os.path.join(images_dir, f"frame_{saved_idx:05d}.png")
-    cv2.imwrite(filename, enhanced)
+    cv2.imwrite(filename, thresh)
 
     saved_idx += 1
     frame_idx += 1

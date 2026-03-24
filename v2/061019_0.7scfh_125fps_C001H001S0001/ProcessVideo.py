@@ -21,8 +21,8 @@ duration = None  # e.g. 5.0 (used only if end_time is None)
 # Processing settings
 crop_x, crop_y, crop_w, crop_h = 380, 0, 333, 632
 rotation_angle = 0.
-contrast_alpha = 0.75
-sharpenWeight = 1.5
+contrast_alpha = 0.95
+sharpenWeight = 2
 clipLimit = 4.0
 # --------------------------
 
@@ -113,33 +113,11 @@ while frame_idx < end_frame:
     # ---- GRAYSCALE ----
     gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
 
-    # -----------------------
-    # BACKGROUND SUBTRACTION
-    # -----------------------
-    diff = cv2.subtract(gray, bg_gray)
-
-    diff = cv2.GaussianBlur(diff, (9, 9), 0)
-
-    # Use adaptive threshold (MUCH better than fixed)
-    thresh = cv2.adaptiveThreshold(
-        diff,
-        255,
-        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-        cv2.THRESH_BINARY,
-        21,   # block size (odd number)
-        2     # constant subtraction
-    )
-
-    # Clean noise
-    kernel = np.ones((3, 3), np.uint8)
-    thresh = cv2.medianBlur(thresh, 5)
-    thresh = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
-
-    # Optional: smooth
+        # Optional: smooth
     # thresh = cv2.GaussianBlur(thresh, (5, 5), 0)
     
     # ---- CLAHE ----
-    local_contrast = clahe.apply(thresh)
+    local_contrast = clahe.apply(gray)
 
     # ---- SHARPEN ----
     blur = cv2.GaussianBlur(local_contrast, (0, 0), 1.0)
@@ -151,7 +129,7 @@ while frame_idx < end_frame:
     # SAVE IMAGE
     # -----------------------
     filename = os.path.join(images_dir, f"frame_{saved_idx:05d}.png")
-    cv2.imwrite(filename, thresh)
+    cv2.imwrite(filename, enhanced)
 
     saved_idx += 1
     frame_idx += 1

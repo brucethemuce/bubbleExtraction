@@ -125,8 +125,8 @@ for i, path in enumerate(image_paths):
 
     # save outputs
     name = f"{i:05d}"
-    cv2.imwrite(os.path.join(output_dir, f"{name}_clean.png"), clean)
-    cv2.imwrite(os.path.join(output_dir, f"{name}_bw.png"), bw)
+    # cv2.imwrite(os.path.join(output_dir, f"{name}_clean.png"), clean)
+    # cv2.imwrite(os.path.join(output_dir, f"{name}_bw.png"), bw)
     cv2.imwrite(os.path.join(output_dir, f"{name}_filled.png"), filled)
 
     # -----------------------
@@ -169,10 +169,12 @@ print(f"Saved bubble data to {csv_file}")
 diameter=np.array(df["diameter_px"])
 
 plt.figure()
-plt.hist(diameter/333*25.4*2.5, bins=31)
-plt.xlabel("diameter, mm")
+plt.hist(diameter/333*25.4*2.5, bins=65)
+plt.xlim(0,20)
+plt.grid()
+plt.xlabel("Bubble diameter, mm")
 plt.ylabel("Frequency")
-plt.title("Histogram Distribution (31 Bins)")
+plt.title("Diameter Distribution (65 Bins)")
 plt.savefig('hist.jpg',dpi=300)
 
 

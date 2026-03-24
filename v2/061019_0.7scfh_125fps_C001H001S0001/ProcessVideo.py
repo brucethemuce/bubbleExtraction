@@ -15,7 +15,7 @@ background = cv2.imread("background.jpg")
 
 # Time trimming (in seconds)
 start_time = 0.0
-end_time = start_time+120 
+end_time = start_time+260
 duration = None  # e.g. 5.0 (used only if end_time is None)
 
 # Processing settings

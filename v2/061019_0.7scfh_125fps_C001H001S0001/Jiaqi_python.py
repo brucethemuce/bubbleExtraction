@@ -198,8 +198,12 @@ plt.ylabel("Number of Measurements")
 # plt.tight_layout()
 # plt.savefig('hist4_20.jpg',dpi=300)
 
-plt.title("0.7 scfh (65 Bins), 4 minutes, 8ms Sampling")
+# plt.title("0.7 scfh (65 Bins), 4 minutes, 8ms Sampling")
+# plt.tight_layout()
+# plt.savefig('hist4_8.jpg',dpi=300)
+
+plt.title("0.7 scfh (65 Bins), 30 seconds, 80ms Sampling")
 plt.tight_layout()
-plt.savefig('hist4_8.jpg',dpi=300)
+plt.savefig('hist_short.jpg',dpi=300)
 
 print("Done.")

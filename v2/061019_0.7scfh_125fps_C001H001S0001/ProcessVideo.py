@@ -10,12 +10,12 @@ input_path = "061019_0.7scfh_125fps_C001H001S0001.mp4" #must be h.264 codec
 images_dir = "frames_partial"
 make_video = False
 outputName = "foo.mp4"
-output_fps = 20 #1/125 = 8ms, 80ms is 10 frames. Video is rendered at 20. sampling rate is then 2fps
+output_fps = 2 #1/125 = 8ms, 80ms is 10 frames. Video is rendered at 20. sampling rate is then 2fps
 background = cv2.imread("background.jpg")
 
 # Time trimming (in seconds)
 start_time = 0.0
-end_time = start_time+240
+end_time = start_time+30
 duration = None  # e.g. 5.0 (used only if end_time is None)
 
 # Processing settings

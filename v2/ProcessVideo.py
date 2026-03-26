@@ -6,16 +6,16 @@ import subprocess
 import shutil
 
 # -------- SETTINGS --------
-input_path = "061019_0.7scfh_125fps_C001H001S0001.mp4" #must be h.264 codec
+input_path = "061019_2scfh_250fps_C001H001S0001.mp4" #must be h.264 codec
 images_dir = "frames_partial"
 make_video = False
 outputName = "foo.mp4"
-output_fps = 10 #unsure how to scale it to do every X seconds
+output_fps = 2 #1/250 = 4ms, 80ms is 20 frames. Video is rendered at 20. sampling rate is then 1fps
 background = cv2.imread("background.jpg")
 
 # Time trimming (in seconds)
 start_time = 0.0
-end_time = start_time+260
+end_time = start_time+240
 duration = None  # e.g. 5.0 (used only if end_time is None)
 
 # Processing settings
@@ -31,6 +31,7 @@ if not cap.isOpened():
     raise Exception("Error opening video file")
 
 input_fps = cap.get(cv2.CAP_PROP_FPS)
+# print(input_fps)
 total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
 frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))

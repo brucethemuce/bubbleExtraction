@@ -5,6 +5,7 @@ from glob import glob
 import pandas as pd
 from skimage import measure
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator
 
 # -----------------------
 # USER SETTINGS
@@ -117,17 +118,19 @@ for i, path in enumerate(image_paths):
     img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
     clean, bw, filled = process_frame(img, bg_inv)
 
-    # initialize accumulator
-    if vof_accumulator is None:
-        vof_accumulator = np.zeros_like(filled, dtype=np.float32)
+    # # initialize accumulator
+    # if vof_accumulator is None:
+    #     vof_accumulator = np.zeros_like(filled, dtype=np.float32)
 
-    vof_accumulator += filled.astype(np.float32) / n_frames
+    # vof_accumulator += filled.astype(np.float32) / n_frames
 
     # save outputs
     name = f"{i:05d}"
+
+    ##save images for debugging
     # cv2.imwrite(os.path.join(output_dir, f"{name}_clean.png"), clean)
     # cv2.imwrite(os.path.join(output_dir, f"{name}_bw.png"), bw)
-    cv2.imwrite(os.path.join(output_dir, f"{name}_filled.png"), filled)
+    # cv2.imwrite(os.path.join(output_dir, f"{name}_filled.png"), filled)
 
     # -----------------------
     # bubble detection
@@ -156,8 +159,8 @@ for i, path in enumerate(image_paths):
 # -----------------------
 # FINAL VOF IMAGE
 # -----------------------
-vof = (vof_accumulator * 255).astype(np.uint8)
-cv2.imwrite(os.path.join(output_dir, "vof.png"), vof)
+# vof = (vof_accumulator * 255).astype(np.uint8)
+# cv2.imwrite(os.path.join(output_dir, "vof.png"), vof)
 
 # -----------------------
 # WRITE CSV
@@ -170,12 +173,20 @@ diameter=np.array(df["diameter_px"])
 
 plt.figure()
 plt.hist(diameter/333*25.4*2.5, bins=65)
-plt.xlim(0,20)
+plt.axvline(8/333*25.4*2.5,color='k', linestyle='-.',label='Detection Threshold')
+# plt.axvline(11/333*25.4*2.5,color='k',label='Single Pixel')
+plt.xlim(0, 30)
+plt.gca().xaxis.set_major_locator(MultipleLocator(2))
+plt.legend()
 plt.grid()
-plt.xlabel("Bubble diameter, mm")
-plt.ylabel("Frequency")
-plt.title("Diameter Distribution (65 Bins)")
-plt.savefig('hist.jpg',dpi=300)
+plt.xlabel(r"$D=\sqrt{4A/\pi},\ \mathrm{mm}$")
+plt.ylabel("Number of Measurements")
+# plt.title("2 scfh (65 Bins), 2 minutes, 80ms Sampling")
+# plt.title("2 scfh (65 Bins), 4 minutes, 80ms Sampling")
+plt.title("2 scfh (65 Bins), 4 minutes, 40ms Sampling")
+plt.tight_layout()
+# plt.savefig('hist2.jpg',dpi=300)
+plt.savefig('hist4_40.jpg',dpi=300)
 
 
 print("Done.")
